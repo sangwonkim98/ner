@@ -1,0 +1,33 @@
+# ================================
+# 모델/데이터/훈련 설정을 한 곳에서 관리하는 설정 파일
+# 코드와 설정을 분리하면 실험 반복, 재현성, 유지보수가 쉬워짐
+# ================================
+
+model:
+  pretrained_model_name: roberta-base  # 사용할 사전학습 모델 이름 (HuggingFace 모델 허브)
+                                        # 코드에서 직접 문자열 바꾸지 않고 config로 관리 → 실험 간 모델만 쉽게 변경
+  dropout: 0.1                          # 모델의 dropout 비율 (과적합 방지 위해 필요)
+
+data:
+  dataset_name: conll2003               # 사용할 데이터셋 이름 (HuggingFace datasets key)
+                                        # 코드가 데이터셋에 의존하지 않도록 분리
+  max_length: 128                       # 토큰 최대 길이: 길면 GPU 메모리 증가, 짧으면 정보 손실
+  label_all_tokens: true                # subword 전부 라벨링할지 여부 (NER 주석 전략)
+  train_subset_ratio: 1.0               # 전체 train dataset 중 일부만 사용할 비율
+                                        # GPU 없이 테스트할 때 0.1으로 줄여서 빠르게 실험하기 좋음
+
+training:
+  num_epochs: 5                         # 전체 학습 반복 횟수
+  train_batch_size: 16                  # 학습 배치 크기
+  eval_batch_size: 32                   # 평가 배치 크기 (더 커도 됨 — backprop 안 함)
+  learning_rate: 3e-5                   # Transformers 표준 학습률
+  weight_decay: 0.01                    # AdamW에서 가중치 감쇠 설정 (일반화 성능 향상)
+  warmup_ratio: 0.1                     # 학습 초반 LR 점진 증가 (stability 향상)
+  max_grad_norm: 1.0                    # gradient clipping (폭주 방지)
+  seed: 42                              # 실험 재현성을 위한 random seed
+
+logging:
+  output_dir: ./log                     # 체크포인트/로그 저장 경로
+  logging_steps: 100                    # 100 step마다 loss 출력
+  eval_steps: 500                       # 500 step마다 validation 평가
+  save_best: true                       # best model 저장 여부 (F1 기준)

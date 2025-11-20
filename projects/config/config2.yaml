@@ -1,0 +1,28 @@
+# config/config2.yaml
+# ALBERT-base-v2로 NER 실험할 때 사용하는 설정 파일
+
+model:
+  pretrained_model_name: albert-base-v2   # 👉 ALBERT 모델
+  dropout: 0.1
+
+data:
+  dataset_name: conll2003
+  max_length: 128
+  label_all_tokens: true
+  train_subset_ratio: 1.0                 # 필요하면 0.3 이런 식으로 줄여도 됨
+
+training:
+  num_epochs: 5
+  train_batch_size: 16
+  eval_batch_size: 32
+  learning_rate: 3e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  max_grad_norm: 1.0
+  seed: 42
+
+logging:
+  output_dir: ./log_albert2              # 👉 RoBERTa랑 안 섞이게 폴더 다르게
+  logging_steps: 100
+  eval_steps: 500
+  save_best: true
